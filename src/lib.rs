@@ -41,7 +41,7 @@ impl Serialize for Error {
 }
 
 #[derive(Default)]
-pub struct ConnectionManager(Mutex<HashMap<Id, WebSocketWriter>>);
+pub struct ConnectionManager(pub Mutex<HashMap<Id, WebSocketWriter>>);
 
 #[derive(Default, Deserialize)]
 #[serde(rename_all = "camelCase")]
