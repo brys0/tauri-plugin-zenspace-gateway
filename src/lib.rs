@@ -18,20 +18,20 @@ use tokio_tungstenite::{
 
 use std::collections::HashMap;
 
-type Id = u32;
-type WebSocket = WebSocketStream<MaybeTlsStream<TcpStream>>;
-type WebSocketWriter = SplitSink<WebSocket, Message>;
-type Result<T> = std::result::Result<T, Error>;
+pub type Id = u32;
+pub type WebSocket = WebSocketStream<MaybeTlsStream<TcpStream>>;
+pub type WebSocketWriter = SplitSink<WebSocket, Message>;
+pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, thiserror::Error)]
-enum Error {
+pub enum Error {
     #[error(transparent)]
     Websocket(#[from] tokio_tungstenite::tungstenite::Error),
     #[error("connection not found for the given id: {0}")]
     ConnectionNotFound(Id),
 }
 
-impl Serialize for Error {
+pub impl Serialize for Error {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -41,7 +41,7 @@ impl Serialize for Error {
 }
 
 #[derive(Default)]
-struct ConnectionManager(Mutex<HashMap<Id, WebSocketWriter>>);
+pub struct ConnectionManager(Mutex<HashMap<Id, WebSocketWriter>>);
 
 #[derive(Default, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -52,7 +52,7 @@ pub struct ConnectionConfig {
     pub accept_unmasked_frames: bool,
 }
 
-impl From<ConnectionConfig> for WebSocketConfig {
+pub impl From<ConnectionConfig> for WebSocketConfig {
     fn from(config: ConnectionConfig) -> Self {
         Self {
             max_send_queue: config.max_send_queue,
@@ -64,14 +64,14 @@ impl From<ConnectionConfig> for WebSocketConfig {
 }
 
 #[derive(Deserialize, Serialize)]
-struct CloseFrame {
+pub struct CloseFrame {
     pub code: u16,
     pub reason: String,
 }
 
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "type", content = "data")]
-enum WebSocketMessage {
+pub enum WebSocketMessage {
     Text(String),
     Binary(Vec<u8>),
     Ping(Vec<u8>),
@@ -165,7 +165,7 @@ pub struct TauriWebsocket<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync>,
 }
 
-impl<R: Runtime> Default for TauriWebsocket<R> {
+pub impl<R: Runtime> Default for TauriWebsocket<R> {
     fn default() -> Self {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![connect, send]),
@@ -173,7 +173,7 @@ impl<R: Runtime> Default for TauriWebsocket<R> {
     }
 }
 
-impl<R: Runtime> Plugin<R> for TauriWebsocket<R> {
+pub impl<R: Runtime> Plugin<R> for TauriWebsocket<R> {
     fn name(&self) -> &'static str {
         "websocket"
     }
