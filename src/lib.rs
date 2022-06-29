@@ -31,7 +31,7 @@ pub enum Error {
     ConnectionNotFound(Id),
 }
 
-pub impl Serialize for Error {
+impl Serialize for Error {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -52,7 +52,7 @@ pub struct ConnectionConfig {
     pub accept_unmasked_frames: bool,
 }
 
-pub impl From<ConnectionConfig> for WebSocketConfig {
+impl From<ConnectionConfig> for WebSocketConfig {
     fn from(config: ConnectionConfig) -> Self {
         Self {
             max_send_queue: config.max_send_queue,
@@ -165,7 +165,7 @@ pub struct TauriWebsocket<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync>,
 }
 
-pub impl<R: Runtime> Default for TauriWebsocket<R> {
+impl<R: Runtime> Default for TauriWebsocket<R> {
     fn default() -> Self {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![connect, send]),
@@ -173,7 +173,7 @@ pub impl<R: Runtime> Default for TauriWebsocket<R> {
     }
 }
 
-pub impl<R: Runtime> Plugin<R> for TauriWebsocket<R> {
+impl<R: Runtime> Plugin<R> for TauriWebsocket<R> {
     fn name(&self) -> &'static str {
         "websocket"
     }
